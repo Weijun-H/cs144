@@ -19,15 +19,15 @@ void get_URL(const string &host, const string &path) {
 
     TCPSocket sock1;
     sock1.connect(Address(host, "http"));
-    string input("GET "+path+" HTTP/1.1\r\nHost: "+host+"\r\n\r\n");
+    string input("GET " + path + " HTTP/1.1\r\nHost: " + host + "\r\n\r\n");
     sock1.write(input);
     sock1.shutdown(SHUT_WR);
-    while(!sock1.eof())
-        cout<<sock1.read();
+    while (!sock1.eof())
+        cout << sock1.read();
     sock1.close();
 
-    //cerr << "Function called: get_URL(" << host << ", " << path << ").\n";
-    //cerr << "Warning: get_URL() has not been implemented yet.\n";
+    // cerr << "Function called: get_URL(" << host << ", " << path << ").\n";
+    // cerr << "Warning: get_URL() has not been implemented yet.\n";
 }
 
 int main(int argc, char *argv[]) {
