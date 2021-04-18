@@ -8,10 +8,24 @@
 
 //! \brief A class that assembles a series of excerpts from a byte stream (possibly out of order,
 //! possibly overlapping) into an in-order byte stream.
+class typeUnassembled{
+    public:
+    size_t inedx;
+    std::string data;
+    typeUnassembled(size_t _index, std::string _data) : inedx(_index), data(_data){};
+
+    //! find out if this sequence is orderly
+    //! \param t
+    //! \return
+    bool operator<(const typeUnassembled &t) const { return inedx < t.inedx;}
+
+};
+
 class StreamReassembler {
   private:
     // Your code here -- add private members as necessary.
 
+    std::deque<char> q{};
     ByteStream _output;  //!< The reassembled in-order byte stream
     size_t _capacity;    //!< The maximum number of bytes
 
