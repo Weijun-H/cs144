@@ -23,7 +23,7 @@ class typeUnassembled{
 };
 
 class StreamReassembler {
-  private:
+private:
     // Your code here -- add private members as necessary.
     std::set<typeUnassembled> _Unassembled;
     ByteStream _output;  //!< The reassembled in-order byte stream
@@ -32,7 +32,7 @@ class StreamReassembler {
     size_t _nUnassembled;
     bool _eof;
 
-  public:
+public:
     //! \brief Construct a `StreamReassembler` that will store up to `capacity` bytes.
     //! \note This capacity limits both the bytes that have been reassembled,
     //! and those that have not yet been reassembled.
@@ -51,6 +51,7 @@ class StreamReassembler {
     //! \name Access the reassembled byte stream
     //!@{
     const ByteStream &stream_out() const { return _output; }
+
     ByteStream &stream_out() { return _output; }
     //!@}
 
@@ -63,6 +64,14 @@ class StreamReassembler {
     //! \brief Is the internal state empty (other than the output stream)?
     //! \returns `true` if no substrings are waiting to be assembled
     bool empty() const;
+
+    //! \brief Merge two substring, use iter2 to update index and data, and then delete iter2
+    //! \param index
+    //! \param data
+    //! \param iter2
+    //! \return
+    int merge_substring(size_t &index, std::string &data, std::set<typeUnassembled>::iterator iter2);
+
 };
 
 #endif  // SPONGE_LIBSPONGE_STREAM_REASSEMBLER_HH
