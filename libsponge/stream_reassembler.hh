@@ -70,7 +70,7 @@ public:
     //! \param data
     //! \param iter2
     //! \return
-    int merge_substring(size_t &index, std::string &data, std::set<typeUnassembled>::iterator iter2);
+    int mergeSubstring(size_t &index, std::string &data, std::set<typeUnassembled>::iterator iter2);
 
 };
 

@@ -14,7 +14,7 @@ class ByteStream {
     // Your code here -- add private members as necessary.
     std::deque<char> q{};
     bool _ended{};
-    size_t _cap, _bytes_written{}, _bytes_read{};
+    size_t _cap, _bytes_written{}, _bytes_read{}; // a{} means a = {}
     // Hint: This doesn't need to be a sophisticated data structure at
     // all, but if any of your tests are taking longer than a second,
     // that's a sign that you probably want to keep exploring
