@@ -35,14 +35,15 @@ class TCPReceiver {
 
     WrappingInt32 ACK ;
 
-    std::set<WrappingInt32> wantSend, haveSend;
+    std::set<uint64_t > wantSend, haveSend;
+
 
 public:
     //! \brief Construct a TCP receiver
     //!
     //! \param capacity the maximum number of bytes that the receiver will
     //!                 store in its buffers at any give time.
-    TCPReceiver(const size_t capacity) : _reassembler(capacity), _capacity(capacity), firstConnection(true), isn(0), checkPoint(0),  header(), SEG(), ACK(0), wantSend({}), haveSend({}) {}
+    TCPReceiver(const size_t capacity) : _reassembler(capacity), _capacity(capacity), firstConnection(true), isn(0), checkPoint(0),  header(), SEG(), ACK(0), wantSend(), haveSend() {}
 
     //! \name Accessors to provide feedback to the remote TCPSender
     //!@{
@@ -80,6 +81,11 @@ public:
     //!@}
 
     uint64_t convertToStreamIndex(WrappingInt32 seqno);
+
+    void calculateACK();
+
+//    bool haveEnoughtWindow();
+
 
 //    WrappingInt32 nextAck();
 };

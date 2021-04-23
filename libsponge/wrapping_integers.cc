@@ -16,7 +16,6 @@ using namespace std;
 //! \param isn The initial sequence number
 WrappingInt32 wrap(uint64_t n, WrappingInt32 isn) {
     uint64_t mod = n % static_cast<uint64_t> (pow(2,32));
-    cout << "n: "<< n<<"\n";
     return isn + mod;
 }
 
@@ -48,8 +47,8 @@ uint64_t unwrap(WrappingInt32 n, WrappingInt32 isn, uint64_t checkpoint) {
         }
         ans += base;
     }
-    cout << "base: "<< base<<"\n";
-    cout << "baseI: "<< baseI<<"\n";
+//    cout << "base: "<< base<<"\n";
+//    cout << "baseI: "<< baseI<<"\n";
 
     if (ans > checkpoint) {
         temp = ans - base;
@@ -60,14 +59,14 @@ uint64_t unwrap(WrappingInt32 n, WrappingInt32 isn, uint64_t checkpoint) {
     uint64_t gap1 = absUit64(temp, checkpoint);
     uint64_t gap2 = absUit64(ans, checkpoint);
 
-    cout << "gap1: "<< gap1<<"\n" ;
-    cout << "gap2: "<< gap2<<"\n" ;
+//    cout << "gap1: "<< gap1<<"\n" ;
+//    cout << "gap2: "<< gap2<<"\n" ;
     if (gap1 < gap2){
-        cout << "ans1: "<< ans - base<<"\n" ;
+//        cout << "ans1: "<< ans - base<<"\n" ;
         return temp;
     } else {
-        cout << "ans2: "<< ans<<"\n" ;
-        cout<<endl;
+//        cout << "ans2: "<< ans<<"\n" ;
+//        cout<<endl;
         return ans;
     }
 
