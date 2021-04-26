@@ -49,6 +49,8 @@ class TCPSender {
 
     std::queue<TCPSegment> _segments_outstanding{};
 
+    uint64_t remaining;
+
   public:
     //! Initialize a TCPSender
     TCPSender(const size_t capacity = TCPConfig::DEFAULT_CAPACITY,
