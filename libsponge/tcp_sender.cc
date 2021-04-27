@@ -136,14 +136,21 @@ bool TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_si
 //! \param[in] ms_since_last_tick the number of milliseconds since the last call to this method
 void TCPSender::tick(const size_t ms_since_last_tick) {
     size_t time_left = ms_since_last_tick;
+    cout<<ms_since_last_tick<<" ms pass"<<endl;
+    cout<<"timeout: "<<_timer._TO<<endl;
+    cout<<"ROT: "<<_timer._RTO<<endl<<endl;
+
     if (_timer.tick(time_left)) {
+        cout<<"has timeout: "<<_timer._TO<<endl<<endl;
         //! There are some failed message
         if (!_segments_outstanding.empty()) {
             _segments_out.push(_segments_outstanding.front());
+            _consecutive_retransmissions++;
             //! The windows do not be filled
             if (_window_size) {
-                _consecutive_retransmissions++;
-                _timer._RTO *= 2;
+//                _consecutive_retransmissions++;
+//                _timer._RTO *= 2;
+//                _timer._TO = 0;
             }
             if (!_timer.isOpen()) {
                 _timer.open();

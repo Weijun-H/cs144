@@ -61,6 +61,8 @@ public:
 
         if (_TO >= _RTO) {
             _TO = 0;
+            _RTO *= 2;
+
             return 1;
         }
         return 0;
