@@ -10,6 +10,62 @@
 #include <queue>
 
 #include <set>
+class TCPRetransmissionTimer {
+public:
+
+    //! initial timer for retransmission
+    unsigned int _initial_RTO;
+
+    //! retransmission for timeout
+    unsigned int _RTO;
+
+    //! timeout we have used
+    unsigned int _TO;
+
+    //! state of the timer
+    bool _open;
+
+    TCPRetransmissionTimer(const uint16_t retx_timeout)
+        : _initial_RTO(retx_timeout)
+        , _RTO(retx_timeout)
+        , _TO(0)
+        , _open(1) {}
+
+    bool isOpen() {
+        return _open;
+    }
+
+    void open() {
+        _open = 1;
+        _TO = 0;
+    }
+
+    void close() {
+        _open = 0;
+        _TO = 0;
+    }
+
+    bool tick(size_t &ms_since_last_tick) {
+        if (!isOpen()) {
+            return 0;
+        }
+
+        //! if the time passing since the last tick is long enough
+        if(ms_since_last_tick > _RTO - _TO) {
+            ms_since_last_tick -= (_RTO - _TO);
+            _TO=_RTO;
+        } else {
+            _TO += ms_since_last_tick;
+            ms_since_last_tick = 0;
+        }
+
+        if (_TO >= _RTO) {
+            _TO = 0;
+            return 1;
+        }
+        return 0;
+    }
+};
 
 //! \brief The "sender" part of a TCP implementation.
 
@@ -50,6 +106,10 @@ class TCPSender {
     std::queue<TCPSegment> _segments_outstanding{};
 
     uint64_t remaining;
+
+    TCPRetransmissionTimer _timer;
+
+    uint16_t _consecutive_retransmissions;
 
   public:
     //! Initialize a TCPSender

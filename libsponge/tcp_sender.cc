@@ -29,7 +29,9 @@ TCPSender::TCPSender(const size_t capacity, const uint16_t retx_timeout, const s
     , _window_size(0)
     , _syn_sent(0)
     , _fin_sent(0)
-    , remaining(0){}
+    , remaining(0)
+    , _timer(retx_timeout)
+    , _consecutive_retransmissions(0){}
 
 uint64_t TCPSender::bytes_in_flight() const {
     return _nBytes_inflight;
@@ -106,6 +108,8 @@ bool TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_si
 
     _recv_ackno = abs_ackno;
 
+    _timer._RTO = _timer._initial_RTO;
+    _consecutive_retransmissions = 0;
 
     //删掉fully-acknowledged segments
     TCPSegment tempSeg;
@@ -122,15 +126,43 @@ bool TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_si
     _recv_ackno = ackno.raw_value();
 
     fill_window();
-//    cout<<"Segment Size: "<<segments_out().size()<<endl;
+    if (!_segments_outstanding.empty()){
+        _timer.open();
+    }
 
     return 1;
 }
 
 //! \param[in] ms_since_last_tick the number of milliseconds since the last call to this method
-void TCPSender::tick(const size_t ms_since_last_tick) { DUMMY_CODE(ms_since_last_tick); }
+void TCPSender::tick(const size_t ms_since_last_tick) {
+    size_t time_left = ms_since_last_tick;
+    if (_timer.tick(time_left)) {
+        //! There are some failed message
+        if (!_segments_outstanding.empty()) {
+            _segments_out.push(_segments_outstanding.front());
+            //! The windows do not be filled
+            if (_window_size) {
+                _consecutive_retransmissions++;
+                _timer._RTO *= 2;
+            }
+            if (!_timer.isOpen()) {
+                _timer.open();
+            }
 
-unsigned int TCPSender::consecutive_retransmissions() const { return {}; }
+            if (_syn_sent) {
+                if(_timer._RTO < _timer._initial_RTO){
+                    _timer._RTO = _timer._initial_RTO;
+                }
+            }
+        }
+        //! There is nothing to send.
+        if (_segments_out.empty()){
+            _timer.close();
+        }
+    }
+}
+
+unsigned int TCPSender::consecutive_retransmissions() const { return _consecutive_retransmissions; }
 
 void TCPSender::send_empty_segment() {
     TCPSegment seg;
@@ -146,9 +178,9 @@ void TCPSender::send_non_empty_segment(TCPSegment &seg) {
     //std::cerr << "send non empty: " << seg.header().to_string() << "length:" << seg.length_in_sequence_space() << endl << endl;
     _segments_out.push(seg);
     _segments_outstanding.push(seg);
-    cout<<"Byte in flight:  "<<_nBytes_inflight<<endl<<endl;
+    cout << "Byte in flight:  " << _nBytes_inflight << endl << endl;
 
-//    // [RFC6298]:(5.1)
-//    if (!_timer.open())
-//        _timer.start();
+    // [RFC6298]:(5.1)
+    if (!_timer.isOpen())
+        _timer.open();
 }
