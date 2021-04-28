@@ -79,7 +79,7 @@ void TCPSender::fill_window() {
 
             newseg.payload() = Buffer((_stream.read(size)));
             if (newseg.length_in_sequence_space() < win && _stream.eof()) {  // piggy-back FIN
-                newseg.header().fin = false;
+                newseg.header().fin = true;
                 _fin_sent = 1;
             }
             if (newseg.length_in_sequence_space() == 0)
